@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the project...'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+            }
+        }
+    }
+    
+    post {
+        success {
+            emailext (
+                subject: "Job Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Good news! Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} succeeded.",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                to: 'your_email@example.com'
+            )
+        }
+        failure {
+            emailext (
+                subject: "Job Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Oops! Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} failed.",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                to: 'your_email@example.com'
+            )
+        }
+    }
+}
